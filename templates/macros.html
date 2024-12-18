@@ -1,0 +1,57 @@
+{% macro display_errors(error_list) %}
+  {% if error_list %}
+    <div class="error-box">
+      {% for error in error_list %}
+        <span class="error-text">{{ error }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro create_input(field_name, field_value, field_label=None, input_type="text", is_disabled=False, is_readonly=False, error_list=None, label_class=None, input_class=None) %}
+  {% if field_label and input_type != "hidden" %}
+    <label class="{{ label_class if label_class else 'default-label' }}" for="{{ field_name }}">{{ field_label }}</label>
+  {% endif %}
+  <div class="{{ input_class if input_class else 'default-input-container' }}">
+    <input id="{{ field_name }}" type="{{ input_type }}" name="{{ field_name }}" value="{{ field_value|e }}"
+           class="{{ 'btn-class' if input_type in ['submit', 'button'] else 'input-field' }}"
+           {{ "readonly" if is_readonly else "" }}
+           {{ "disabled" if is_disabled else "" }}>
+    {{ display_errors(error_list) }}
+  </div>
+{% endmacro %}
+
+{% macro create_checkbox(field_name, is_checked, field_label=None, is_disabled=False, error_list=None, label_class=None, checkbox_class=None) %}
+  <div class="{{ checkbox_class if checkbox_class else 'default-checkbox-container' }}">
+    <input id="{{ field_name }}" type="checkbox" name="{{ field_name }}" value="on"
+           {{ "checked" if is_checked else "" }}
+           {{ "disabled" if is_disabled else "" }}>
+    <label class="{{ label_class if label_class else 'default-checkbox-label' }}" for="{{ field_name }}">{{ field_label }}</label>
+    {{ display_errors(error_list) }}
+  </div>
+{% endmacro %}
+
+{% macro create_input_field(field, field_label=None, input_type="text", is_disabled=False, is_readonly=False, label_class=None, input_class=None) %}
+  {% set field_value = field.data if field.data else "" %}
+  <div class="form-item"></div>
+    {{ create_input(field.name, field_value, field_label=field_label if field_label else field.label, input_type=input_type, is_disabled=is_disabled, is_readonly=is_readonly, error_list=field.errors, label_class=label_class, input_class=input_class) }}
+  </div>
+{% endmacro %}
+
+{% macro create_password_field(field, field_label=None, is_disabled=False, label_class=None, input_class=None) %}
+  {% set field_value = "" %}
+  <div class="form-item"></div>
+    {{ create_input(field.name, field_value, field_label=field_label if field_label else field.label, input_type="password", is_disabled=is_disabled, error_list=field.errors, label_class=label_class, input_class=input_class) }}
+  </div>
+{% endmacro %}
+
+{% macro create_checkbox_field(field, field_label=None, is_disabled=False, label_class=None, checkbox_class=None) %}
+  {% set field_value = field.data if field.data else "" %}
+  <div class="form-item">
+    {{ create_checkbox(field.name, field_value, field_label=field_label if field_label else field.label, is_disabled=is_disabled, error_list=field.errors, label_class=label_class, checkbox_class=checkbox_class) }}
+  </div>
+{% endmacro %}
+
+{% macro create_submit_button(button_class="submit-btn") %}
+  <input type="submit" class="{{ button_class }}">
+{% endmacro %}
